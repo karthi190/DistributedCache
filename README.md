@@ -1,7 +1,7 @@
 # Distributed Cache
 Simple Distributed Key Value Cache in pure Java 8
 
-This is a simple pure Java implementation of a distributed cache. Essentials like HTTP Server, Http Request handler, and in-mem cache, JSON generation are implemented using JDK 8 classes only. For replication, HTTP is used over old school RMI/JGroups based replication. 
+This is a simple pure Java implementation of a distributed cache. Essentials like HTTP Server, Http Request handler, and in-mem cache, JSON generation are implemented using Oracle JDK 8 classes only. For replication, HTTP is used over old school RMI/JGroups based replication. 
 
 **Installation:**
 
