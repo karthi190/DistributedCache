@@ -1,10 +1,11 @@
-package com.karthi.dkv.handler;
+package com.karthi.dkv.http;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
+import com.karthi.dkv.App;
 import com.karthi.dkv.cache.KeyValueCache;
-import com.sun.net.httpserver.*;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 
 
 /**
@@ -21,8 +22,7 @@ import com.sun.net.httpserver.*;
 @SuppressWarnings("restriction")
 public class HttpRequestHandler implements HttpHandler {
 
-	// Cache storing the key-values
-	private KeyValueCache cache;
+	private KeyValueCache cache = new KeyValueCache();
 
 	public HttpRequestHandler() {
 		cache = new KeyValueCache();
@@ -36,12 +36,11 @@ public class HttpRequestHandler implements HttpHandler {
 		String responseValue = null;
 
 		// rawKeyValueFromRequest[0] contains key and rawKeyValueFromRequest[1] contains value from query string
-		String[] rawKeyValueFromRequest = parseRequest(httpExchange);
+		String[] rawKeyValueFromRequest = HttpUtils.parseRequest(httpExchange);
 		
-		//Error Check
 		//TODO: Error codes such as 404, 500 should be handled.
 		if (rawKeyValueFromRequest.length != 2) {
-			sendResponse(httpExchange, "Bad Request" , (short)400 , "");
+			HttpUtils.sendResponse(httpExchange, "Bad Request" , (short)400 , "");
 			return;
 		}
 
@@ -51,7 +50,7 @@ public class HttpRequestHandler implements HttpHandler {
 			responseValue = getValueForKey(rawKeyValueFromRequest[1]);
 			
 			if ( responseValue == null ) {
-				responseMessage = "No Value found for the key!";
+				responseMessage = "No Value found for the key !";
 			} else {
 				responseMessage = "success";
 			}
@@ -74,7 +73,7 @@ public class HttpRequestHandler implements HttpHandler {
 			responseMessage = "success";
 		}
 
-		sendResponse(httpExchange, responseMessage, responseStatusCode, responseValue);
+		HttpUtils.sendResponse(httpExchange, responseMessage, responseStatusCode, responseValue);
 	}
 
 	/**
@@ -83,15 +82,21 @@ public class HttpRequestHandler implements HttpHandler {
 	 * 
 	 * @param key
 	 * @param value
+	 * @throws IOException 
 	 */
-	private void replicateToOtherHosts(String key, String value) {
+	private void replicateToOtherHosts(String key, String value) throws IOException {
 		
 		//Get Host List
+		String[] urlList = App.configProperties.getProperty("dkv.replication.host_list").split(",");
 		
 		//Replicate by invoking PUT request on all the hosts in host list
-		
+		for (String url:urlList) {
+			System.out.println("Replicating to " + url);
+			HttpUtils.sendPutRequest(url, key, value);
+		}
 	}
-
+	
+	
 	private void replicateHere(String key, String value) {
 		cache.set(key, value);
 	}
@@ -102,35 +107,6 @@ public class HttpRequestHandler implements HttpHandler {
 
 	private String getValueForKey(String key) {
 		return cache.get(key);
-	}
-
-	private void sendResponse(HttpExchange httpExchange, String message, short statusCode, String value)
-			throws IOException {
-		OutputStream outputStream = httpExchange.getResponseBody();
-		String jsonResponse = prepareJsonResponse(message, statusCode, value);
-		httpExchange.sendResponseHeaders(200, jsonResponse.length());
-		outputStream.write(jsonResponse.getBytes());
-		outputStream.flush();
-		outputStream.close();
-	}
-
-	/**
-	 * Building JSON response using StringBuilder
-	 * 
-	 */
-	private String prepareJsonResponse(String message, short statusCode, String value) {
-		StringBuilder jsonResponsebuilder = new StringBuilder();
-		jsonResponsebuilder.append("{");
-		jsonResponsebuilder.append("\"message\":\"").append(message).append("\",");
-		jsonResponsebuilder.append("\"value\":\"").append(value==null?"":value).append("\",");
-		jsonResponsebuilder.append("\"statusCode\":").append(statusCode);
-		jsonResponsebuilder.append("}");
-		return jsonResponsebuilder.toString();
-	}
-
-	private String[] parseRequest(HttpExchange httpExchange) {
-		
-		return httpExchange.getRequestURI().toString().split("\\?")[1].split("=");
 	}
 
 }

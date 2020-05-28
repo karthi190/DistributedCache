@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import com.karthi.dkv.config.ConfigProperties;
-import com.karthi.dkv.handler.HttpRequestHandler;
+import com.karthi.dkv.http.HttpRequestHandler;
 import com.sun.net.httpserver.*;
 
 /**
