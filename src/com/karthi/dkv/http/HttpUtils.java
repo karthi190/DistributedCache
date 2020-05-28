@@ -16,7 +16,7 @@ public class HttpUtils {
 			throws IOException {
 		OutputStream outputStream = httpExchange.getResponseBody();
 		String jsonResponse = prepareJsonResponse(message, statusCode, value);
-		httpExchange.sendResponseHeaders(200, jsonResponse.length());
+		httpExchange.sendResponseHeaders(statusCode, jsonResponse.length());
 		outputStream.write(jsonResponse.getBytes());
 		outputStream.flush();
 		outputStream.close();
