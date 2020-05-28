@@ -10,7 +10,7 @@ The config.properties files should mention the deployed host and port. Along wit
 **Usage:**
 1. http://localhost:8001/dkv?key=value : POST - To set new key value
 2. http://localhost:8001/dkv?key=value : GET - To get value for the key
-3. http://localhost:8001/dkv?key=value : PUT - To replicate the key & value
+3. http://localhost:8001/dkv?key=value : PUT - To replicate the key & value (Not for external usage)
 
 **Note**
 
