@@ -13,7 +13,7 @@ Deployment and running can be done in just two steps. The application by default
 dkv.replication.host_list=http://localhost:8002/dkv
 ```
 
-2. Export as an executable JAR with a name dkv.jar (can be done in a single click in an IDE) and Run from any machine!
+2. Export as an executable JAR with a name such as dkv.jar (can be done in a single click in an IDE) and Run from any machine!
 
 ```
 java -jar dkv.jar
@@ -22,7 +22,7 @@ java -jar dkv.jar
 **Usage:**
 
 1. http://localhost:8001/dkv?key=value : POST - To set new key value
-2. http://localhost:8001/dkv?key=value : GET - To get value for the key
+2. http://localhost:8001/dkv?key=value : GET - To get value for the key (Here, 'value' is the actual key')
 3. http://localhost:8001/dkv?key=value : PUT - To replicate the key & value (Not for external usage)
 
 **Note**
